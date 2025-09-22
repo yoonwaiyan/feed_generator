@@ -1,0 +1,11 @@
+.git
+.gitignore
+README.md
+.env
+.env.example
+Dockerfile*
+docker-compose*
+node_modules
+tmp
+log
+storage/*.sqlite3*
