@@ -39,16 +39,26 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    environment: Test
 
-    # services:
-    #  redis:
-    #    image: redis
-    #    ports:
-    #      - 6379:6379
-    #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    services:
+      postgres:
+        image: postgres:17.6
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_USER: postgres
+          POSTGRES_DB: feed_generator_test
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      #  redis:
+      #    image: redis
+      #    ports:
+      #      - 6379:6379
+      #    options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Install packages
-        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y build-essential git libyaml-dev pkg-config postgresql-client libpq-dev
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,5 +72,17 @@ jobs:
       - name: Run tests
         env:
           RAILS_ENV: test
+          DATABASE_NAME: feed_generator_test
+          DATABASE_USERNAME: postgres
+          DATABASE_PASSWORD: password
+          DATABASE_HOST: localhost
+          SUPABASE_HOST: ${{ vars.SUPABASE_HOST }}
+          SUPABASE_PORT: ${{ vars.SUPABASE_PORT }}
+          SUPABASE_DATABASE: ${{ vars.SUPABASE_DATABASE }}
+          SUPABASE_USERNAME: ${{ vars.SUPABASE_USERNAME }}
+          SUPABASE_PASSWORD: ${{ secrets.SUPABASE_PASSWORD }}
+          USE_AI_ANALYSIS: ${{ vars.USE_AI_ANALYSIS }}
+          AI_PROVIDER: ${{ vars.AI_PROVIDER }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test
