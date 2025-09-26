@@ -6,6 +6,8 @@ gem "rails", "~> 8.0.2", ">= 8.0.2.1"
 gem "pg", "~> 1.1"
 # Use dotenv to load environment variables
 gem "dotenv-rails"
+# HTML parsing
+gem "nokogiri"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
