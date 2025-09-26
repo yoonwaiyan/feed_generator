@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "5555:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -21,6 +21,7 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    network_mode: host
     environment:
       DATABASE_NAME: feed_generator_development
       DATABASE_USERNAME: postgres
