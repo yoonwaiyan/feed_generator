@@ -6,6 +6,8 @@ gem "rails", "~> 8.0.2", ">= 8.0.2.1"
 gem "pg", "~> 1.1"
 # Use dotenv to load environment variables
 gem "dotenv-rails"
+# HTML parsing
+gem "nokogiri"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
@@ -46,4 +48,10 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Ruby linting
+  gem "rubocop", require: false
+
+  # Mocking and stubbing
+  gem "mocha", require: false
 end

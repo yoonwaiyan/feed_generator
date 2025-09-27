@@ -9,6 +9,8 @@ services:
       - "5555:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
 
   web:
     build:
@@ -21,13 +23,18 @@ services:
       - "3000:3000"
     depends_on:
       - db
-    network_mode: host
     environment:
       DATABASE_NAME: feed_generator_development
       DATABASE_USERNAME: postgres
       DATABASE_PASSWORD: password
       DATABASE_HOST: db
       RAILS_ENV: development
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
