@@ -51,4 +51,7 @@ group :development, :test do
 
   # Ruby linting
   gem "rubocop", require: false
+
+  # Mocking and stubbing
+  gem "mocha", require: false
 end
