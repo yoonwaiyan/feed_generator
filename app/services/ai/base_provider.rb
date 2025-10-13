@@ -4,6 +4,10 @@ module AI
       raise NotImplementedError, "Subclasses must implement analyze_containers"
     end
 
+    def extract_feed_items(html_structure, url)
+      raise NotImplementedError, "Subclasses must implement extract_feed_items"
+    end
+
     private
 
     def make_request(payload)
