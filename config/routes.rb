@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post "feeds/analyze", to: "feeds#analyze"
+      get "feeds/items", to: "feeds#items"
     end
   end
 

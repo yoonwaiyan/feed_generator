@@ -12,29 +12,20 @@ module AI
     end
 
     def analyze_containers(html_structure)
-      prompt = build_prompt(html_structure)
+      prompt = build_container_analysis_prompt(html_structure)
       response = make_request(prompt)
-      parse_response(response)
+      parse_container_response(response)
+    end
+
+    def extract_feed_items(html_structure, url)
+      prompt = build_feed_extraction_prompt(html_structure, url)
+      response = make_request(prompt)
+      parse_feed_response(response)
     end
 
     private
 
-    def build_prompt(html_structure)
-      <<~PROMPT
-        Analyze the following HTML structure and identify the best container for main content extraction.
-        Return a JSON response with the selector and confidence score (0-100).
 
-        HTML Structure:
-        #{html_structure}
-
-        Response format:
-        {
-          "selector": "CSS selector for the best container",
-          "confidence_score": 85,
-          "reasoning": "Brief explanation of why this container was chosen"
-        }
-      PROMPT
-    end
 
     def make_request(prompt)
       uri = URI(API_URL)
@@ -65,20 +56,79 @@ module AI
       {}
     end
 
-    def parse_response(response)
+
+
+    def build_feed_extraction_prompt(html_structure, url)
+      <<~PROMPT
+        Extract feed information from the following HTML structure from #{url}.
+        Return a JSON response with feed title, description, and an array of at least 10 items.
+        Extract as many relevant feed items as possible from the provided HTML containers.
+
+        HTML Structure:
+        #{html_structure}
+
+        Response format:
+        {
+          "feed_title": "Website or Feed Title",
+          "feed_description": "Brief description of the feed content",
+          "items": [
+            {
+              "title": "Article title",
+              "link": "https://example.com/article",
+              "published_at": "2024-01-01T12:00:00Z"
+            }
+          ]
+        }
+      PROMPT
+    end
+
+    def parse_feed_response(response)
       content = response.dig("choices", 0, "message", "content")
-      return fallback_response unless content
+      return fallback_feed_response unless content
 
       # Extract JSON from response
       json_match = content.match(/\{.*\}/m)
-      return fallback_response unless json_match
+      return fallback_feed_response unless json_match
 
       JSON.parse(json_match[0])
     rescue JSON::ParserError
-      fallback_response
+      fallback_feed_response
     end
 
-    def fallback_response
+    def fallback_feed_response
+      { "items" => [] }
+    end
+
+    def build_container_analysis_prompt(html_structure)
+      <<~PROMPT
+        Analyze the following HTML structure and identify the best container for main content extraction.
+        Return a JSON response with the selector and confidence score (0-100).
+
+        HTML Structure:
+        #{html_structure}
+
+        Response format:
+        {
+          "selector": "CSS selector for the best container",
+          "confidence_score": 85,
+          "reasoning": "Brief explanation of why this container was chosen"
+        }
+      PROMPT
+    end
+
+    def parse_container_response(response)
+      content = response.dig("choices", 0, "message", "content")
+      return fallback_container_response unless content
+
+      json_match = content.match(/\{.*\}/m)
+      return fallback_container_response unless json_match
+
+      JSON.parse(json_match[0])
+    rescue JSON::ParserError
+      fallback_container_response
+    end
+
+    def fallback_container_response
       {
         "selector" => "main",
         "confidence_score" => 50,
